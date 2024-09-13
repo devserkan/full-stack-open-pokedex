@@ -3,6 +3,7 @@ name: Deployment pipeline
 env:
   IS_PUSH: ${{ github.event_name == 'push' }}
   HAS_SKIP_MESSAGE: ${{ contains(join(github.event.commits.*.message), '#skip') }}
+  SHOULD_DEPLOY: ${{ github.env.IS_PUSH == 'true' && github.env.HAS_SKIP_MESSAGE != 'true' }}
 
 on:
   push:
@@ -29,12 +30,12 @@ jobs:
       - name: Test
         run: npm run test
       - name: Deploy app
-        if: ${{ env.IS_PUSH && !env.HAS_SKIP_MESSAGE }}
+        if: ${{ env.SHOULD_DEPLOY == 'true' }}
         run: flyctl deploy --remote-only
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
   tag_release:
-    if: ${{ github.env.IS_PUSH && !github.env.HAS_SKIP_MESSAGE }}
+    if: ${{ github.env.SHOULD_DEPLOY == 'true' }}
     needs: [simple_deployment_pipeline]
     runs-on: ubuntu-20.04
     steps:
