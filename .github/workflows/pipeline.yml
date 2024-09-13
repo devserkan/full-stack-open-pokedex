@@ -1,5 +1,9 @@
 name: Deployment pipeline
 
+env:
+  IS_PUSH: ${{ github.event_name == 'push' }}
+  HAS_SKIP_MESSAGE: ${{ contains(join(github.event.commits.*.message), '#skip') }}
+
 on:
   push:
     branches:
@@ -15,16 +19,22 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
+      - uses: superfly/flyctl-actions/setup-flyctl@master
       - name: Install dependencies 
-        run: npm install  
+        run: npm ci  
       - name: Check style
         run: npm run eslint
       - name: Build
         run: npm run build
       - name: Test
         run: npm run test
+      - name: Deploy app
+        if: ${{ env.IS_PUSH && !env.HAS_SKIP_MESSAGE }}
+        run: flyctl deploy --remote-only
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
   tag_release:
-    if: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message), '#skip') }}
+    if: ${{ github.env.IS_PUSH && !github.env.HAS_SKIP_MESSAGE }}
     needs: [simple_deployment_pipeline]
     runs-on: ubuntu-20.04
     steps:
