@@ -1,9 +1,7 @@
 name: Deployment pipeline
 
 env:
-  IS_PUSH: ${{ github.event_name == 'push' }}
-  HAS_SKIP_MESSAGE: ${{ contains(join(github.event.commits.*.message), '#skip') }}
-  SHOULD_DEPLOY: ${{ github.env.IS_PUSH == 'true' && github.env.HAS_SKIP_MESSAGE != 'true' }}
+  SHOULD_DEPLOY: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message), '#skip') }}
 
 on:
   push:
