@@ -37,7 +37,7 @@ jobs:
         uses: stegzilla/discord-notify@v2
         with:
           title: Deployment succeeded!
-          message: "**${{ github.event.pull_request.title }}**\n**Creator:** ${{ github.event.pull_request.user.login }}\n${{ github.event.pull_request.html_url }}"
+          message: "**${{ github.head_commit.message }}**\n**Creator:** ${{ github.head_commit.author.username }}\n${{ github.head_commit.url }}"
           webhook_url: ${{ secrets.DISCORD_WEBHOOK }}
           username: 'devserkan'
           colour: #1f883d
@@ -46,7 +46,7 @@ jobs:
         uses: stegzilla/discord-notify@v2
         with:
           title: Deployment failed!
-          message: "**${{ github.event.pull_request.title }}**\n**Creator:** ${{ github.event.pull_request.user.login }}\n${{ github.event.pull_request.html_url }}"
+          message: "**${{ github.head_commit.message }}**\n**Creator:** ${{ github.head_commit.author.username }}\n${{ github.head_commit.url }}"
           webhook_url: ${{ secrets.DISCORD_WEBHOOK }}
           username: 'devserkan'
           colour: #d73a49
