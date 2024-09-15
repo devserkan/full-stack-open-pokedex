@@ -12,14 +12,6 @@ app.get('/health', (req, res) => {
   res.send('ok')
 })
 
-app.use((req, res, next) => {
-  if (req.path === '/') {
-    return res.status(500).send('Simulated 500 Internal Server Error')
-  }
-
-  next()
-})
-
 app.use(express.static('dist'))
 
 app.listen(PORT, () => {
